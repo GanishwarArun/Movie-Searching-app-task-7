@@ -15,11 +15,17 @@ const Movies = () => {
   const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const apiurl = "http://www.omdbapi.com/";
-  const apiKey = "84411acf";
+  const apiurl = "https://www.omdbapi.com/";
+  const apiKey = import.meta.env.VITE_OMDB_API_KEY;
+  console.log("Component mounted. API Key:", apiKey);
 
   const fetchMovies = async (searchTerm) => {
-    if (searchTerm.trim() === "") return;
+    console.log("fetchMovies called with:", searchTerm);
+
+    if (searchTerm.trim() === "") {
+      console.log("Search term is empty, returning");
+      return;
+    }
 
     setIsLoading(true);
     const fullUrl = `${apiurl}?apikey=${apiKey}&s=${encodeURIComponent(
@@ -28,7 +34,10 @@ const Movies = () => {
     console.log("API URL:", fullUrl);
 
     try {
+      console.log("Sending request to API...");
       const response = await axios.get(fullUrl);
+      console.log("API Response:", response.data);
+
       const data = response.data;
 
       if (data.Response === "True") {
@@ -37,6 +46,7 @@ const Movies = () => {
           results: data.Search,
         }));
       } else {
+        console.log("API returned an error:", data.Error);
         toast.error(data.Error || "An error occurred", {
           position: "bottom-center",
         });
@@ -61,7 +71,12 @@ const Movies = () => {
   };
 
   useEffect(() => {
-    fetchMovies("avengers"); 
+    if (apiKey) {
+      fetchMovies("avengers");
+    } else {
+      console.error("API key is not defined");
+      toast.error("API key is missing. Please check your configuration.");
+    }
   }, []);
 
   const handleChange = (value) => {
