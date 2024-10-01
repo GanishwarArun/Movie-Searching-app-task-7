@@ -68,16 +68,30 @@ const Movies = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+    };
+    
 
   useEffect(() => {
+    const apiKey = import.meta.env.VITE_OMDB_API_KEY;
+    console.log("API Key loaded:", apiKey); // Check if API key is loaded
+
     if (apiKey) {
       fetchMovies("avengers");
+      console.log("Fetching movies for:", "avengers"); // Indicate fetching process
     } else {
-      console.error("API key is not defined");
+      console.error("API key is not defined"); // Error handling
       toast.error("API key is missing. Please check your configuration.");
     }
   }, []);
+
+//   useEffect(() => {
+//     if (apiKey) {
+//       fetchMovies("avengers");
+//     } else {
+//       console.error("API key is not defined");
+//       toast.error("API key is missing. Please check your configuration.");
+//     }
+//   }, []);
 
   const handleChange = (value) => {
     setSearch(value);
